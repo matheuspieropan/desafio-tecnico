@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GetstoreApplication {
+public class GetStoreApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GetstoreApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(GetStoreApplication.class, args);
+    }
 }

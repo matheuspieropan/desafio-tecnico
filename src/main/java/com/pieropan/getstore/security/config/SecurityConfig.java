@@ -17,18 +17,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    final String[] PERMISSOES = {"/usuario/**"};
-
     @Autowired
     AuthFilter authFilter;
 
     @SneakyThrows(Exception.class)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) {
-        return security.authorizeHttpRequests((auth -> auth.requestMatchers(PERMISSOES)
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()))
+        return security.authorizeHttpRequests((auth -> auth.requestMatchers("/usuario/**")
+                        .permitAll().anyRequest().authenticated()))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
                 .build();

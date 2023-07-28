@@ -23,7 +23,7 @@ public class VoucherService {
 
     VoucherRepository repository;
 
-    List<ValidarVoucher> validacoes;
+    List<ValidarUsoVoucher> validacoes;
 
     List<ValidarCriacaoVoucher> validacoesCriacaoVoucher;
 

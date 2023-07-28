@@ -26,7 +26,7 @@ public class UsuarioService {
 
     public String realizarLogin(LoginRequest loginRequest) {
         var authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.senha()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getSenha()));
 
         Usuario usuario = (Usuario) authenticate.getPrincipal();
 

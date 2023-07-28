@@ -9,7 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface VoucherRepository extends CrudRepository<Voucher, Long> {
+
     Optional<Voucher> findByCodigoVoucherAndEmail(String codigoVoucher, String email);
 
     List<Voucher> findByEmail(String email);
+
+    Optional<Voucher> findByDestinatario(String destinatario);
 }

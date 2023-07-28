@@ -1,4 +1,4 @@
-****# Autenticação com Spring security 😄
+# Autenticação com Spring security 😄
 
 Como solicitado no exercício o sistema possui autenticação. Utilizei o security do spring para realização do mesmo.
 

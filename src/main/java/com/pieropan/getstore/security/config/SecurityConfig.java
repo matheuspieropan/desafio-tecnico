@@ -20,10 +20,17 @@ public class SecurityConfig {
     @Autowired
     AuthFilter authFilter;
 
+    final String[] PERMISSOES = {
+            "/usuario/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/api-docs/**",
+            "/v3/**"};
+
     @SneakyThrows(Exception.class)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) {
-        return security.authorizeHttpRequests((auth -> auth.requestMatchers("/usuario/**")
+        return security.authorizeHttpRequests((auth -> auth.requestMatchers(PERMISSOES)
                         .permitAll().anyRequest().authenticated()))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())

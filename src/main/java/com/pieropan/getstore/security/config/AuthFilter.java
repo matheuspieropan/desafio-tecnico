@@ -25,7 +25,7 @@ public class AuthFilter extends OncePerRequestFilter {
     @SneakyThrows({ServletException.class, IOException.class})
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filter) {
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader("Authorization").replace("Bearer ","");
 
         if (Objects.nonNull(token) && tokenValidado(token)) {
             String email = tokenService.getClaims(token).get("email").toString();

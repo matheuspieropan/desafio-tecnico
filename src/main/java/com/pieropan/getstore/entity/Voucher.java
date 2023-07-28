@@ -25,11 +25,13 @@ public class Voucher {
 
     private String ofertaEspecial;
 
-    private String descontoPercentualFixo;
+    private int descontoPercentualFixo;
 
     private String codigoVoucher;
 
     private String codigoUnico;
 
     private LocalDateTime dataValidade;
+
+    private LocalDateTime dataUso;
 }

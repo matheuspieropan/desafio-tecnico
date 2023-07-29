@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.pieropan.getstore.enums.ValidacaoEnum.NAO_FOI_POSSIVEL_CRIAR_VOUCHER;
 import static com.pieropan.getstore.enums.ValidacaoEnum.VOUCHER_NAO_ENCONTRADO_POR_EMAIL;
+import static com.pieropan.getstore.mapper.VoucherMapper.INSTANCE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @AllArgsConstructor
@@ -30,8 +30,8 @@ public class VoucherService {
     public int utilizarVoucher(String codigoVoucher, String email) {
         Optional<Voucher> voucher = repository.findByCodigoVoucherAndEmail(codigoVoucher, email);
         validacoes.forEach(v -> v.validar(voucher));
-        atualizarDataUsoVoucher(voucher.get());
 
+        atualizarDataUsoVoucher(voucher.get());
         return voucher.get().getDescontoPercentualFixo();
     }
 
@@ -41,23 +41,18 @@ public class VoucherService {
     }
 
     public List<VoucherPorEmailResponse> obterVoucherPorEmail(String email) {
-        List<Voucher> voucher = repository.findByEmail(email);
+        List<Voucher> vouchers = repository.findByEmail(email);
 
-        if (voucher.isEmpty()) {
+        if (vouchers.isEmpty()) {
             throw new ExcecaoCustomizada(VOUCHER_NAO_ENCONTRADO_POR_EMAIL.getDescricao(), BAD_REQUEST.value());
         }
-
-        return voucher.stream().map(this::getVoucherPorEmailResponse).collect(Collectors.toList());
-    }
-
-    VoucherPorEmailResponse getVoucherPorEmailResponse(Voucher voucher) {
-        return new VoucherPorEmailResponse(voucher.getCodigoVoucher(), voucher.getOfertaEspecial());
+        return INSTANCE.toVoucherPorEmailResponse(vouchers);
     }
 
     public void criarVoucher(VoucherCadastroRequest voucherCadastroRequest) {
         Optional<Voucher> voucher = repository.findByDestinatario(voucherCadastroRequest.getDestinatario());
         if (voucher.isEmpty()) {
-            repository.save(getVoucher(voucherCadastroRequest));
+            repository.save(INSTANCE.toVoucher(voucherCadastroRequest));
         } else {
 
             boolean naoPossoCadastrar = validacoesCriacaoVoucher.stream()
@@ -66,35 +61,7 @@ public class VoucherService {
             if (naoPossoCadastrar) {
                 throw new ExcecaoCustomizada(NAO_FOI_POSSIVEL_CRIAR_VOUCHER.getDescricao(), BAD_REQUEST.value());
             }
-            atualizarVoucher(voucher.get(),voucherCadastroRequest.getOfertaEspecial(),voucherCadastroRequest.getDataValidade());
+            repository.save(INSTANCE.atualizarVoucher(voucherCadastroRequest, voucher.get()));
         }
-    }
-
-    void atualizarVoucher(Voucher voucher, String novaOfertaEspecial, LocalDateTime novaValidade) {
-        String codigoUnico = gerarCodigoUnico(voucher.getDestinatario(), novaOfertaEspecial, novaValidade.toString());
-        voucher.setCodigoUnico(codigoUnico);
-        voucher.setOfertaEspecial(novaOfertaEspecial);
-        voucher.setDataValidade(novaValidade);
-
-        repository.save(voucher);
-    }
-
-    Voucher getVoucher(VoucherCadastroRequest voucherCadastroRequest) {
-        String destinatario = voucherCadastroRequest.getDestinatario();
-        String ofertaEspecial = voucherCadastroRequest.getOfertaEspecial();
-        LocalDateTime validade = voucherCadastroRequest.getDataValidade();
-
-        return new Voucher(null, destinatario,
-                voucherCadastroRequest.getNome(),
-                voucherCadastroRequest.getEmail(),
-                ofertaEspecial,
-                voucherCadastroRequest.getDescontoPercentualFixo(),
-                voucherCadastroRequest.getCodigoVoucher(),
-                gerarCodigoUnico(destinatario, ofertaEspecial, validade.toString()),
-                validade, null);
-    }
-
-    String gerarCodigoUnico(String destinatario, String ofertaEspecial, String validade) {
-        return new StringBuilder(destinatario).append(ofertaEspecial).append(validade).toString();
     }
 }

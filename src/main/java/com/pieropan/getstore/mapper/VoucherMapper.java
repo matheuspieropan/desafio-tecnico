@@ -5,7 +5,6 @@ import com.pieropan.getstore.request.VoucherCadastroRequest;
 import com.pieropan.getstore.response.VoucherPorEmailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -21,9 +20,6 @@ public interface VoucherMapper {
     Voucher toVoucher(VoucherCadastroRequest voucherCadastroRequest);
 
     List<VoucherPorEmailResponse> toVoucherPorEmailResponse(List<Voucher> vouchers);
-
-    @Mapping(target = "codigoUnico", expression = "java(gerarCodigoUnico(voucherCadastroRequest))")
-    Voucher atualizarVoucher(VoucherCadastroRequest voucherCadastroRequest, @MappingTarget Voucher voucher);
 
     default String gerarCodigoUnico(VoucherCadastroRequest voucherCadastroRequest) {
         String codigo = new StringBuilder(voucherCadastroRequest.getDestinatario())

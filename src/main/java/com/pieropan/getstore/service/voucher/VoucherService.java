@@ -61,7 +61,7 @@ public class VoucherService {
             if (naoPossoCadastrar) {
                 throw new ExcecaoCustomizada(NAO_FOI_POSSIVEL_CRIAR_VOUCHER.getDescricao(), BAD_REQUEST.value());
             }
-            repository.save(INSTANCE.atualizarVoucher(voucherCadastroRequest, voucher.get()));
+            repository.save(INSTANCE.toVoucher(voucherCadastroRequest));
         }
     }
 }

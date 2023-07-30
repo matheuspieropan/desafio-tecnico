@@ -4,6 +4,7 @@ import com.pieropan.getstore.entity.Voucher;
 import com.pieropan.getstore.exception.ExcecaoCustomizada;
 import com.pieropan.getstore.repository.VoucherRepository;
 import com.pieropan.getstore.request.VoucherCadastroRequest;
+import com.pieropan.getstore.response.VoucherCadastroResponse;
 import com.pieropan.getstore.response.VoucherPorEmailResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,19 +50,18 @@ public class VoucherService {
         return INSTANCE.toVoucherPorEmailResponse(vouchers);
     }
 
-    public void criarVoucher(VoucherCadastroRequest voucherCadastroRequest) {
+    public VoucherCadastroResponse criarVoucher(VoucherCadastroRequest voucherCadastroRequest) {
         Optional<Voucher> voucher = repository.findByDestinatario(voucherCadastroRequest.getDestinatario());
-        if (voucher.isEmpty()) {
-            repository.save(INSTANCE.toVoucher(voucherCadastroRequest));
-        } else {
+        boolean possoCadastrar = false;
 
-            boolean naoPossoCadastrar = validacoesCriacaoVoucher.stream()
+        if (voucher.isPresent()) {
+            possoCadastrar = !validacoesCriacaoVoucher.stream()
                     .allMatch(v -> v.validar(voucher.get(), voucherCadastroRequest));
-
-            if (naoPossoCadastrar) {
-                throw new ExcecaoCustomizada(NAO_FOI_POSSIVEL_CRIAR_VOUCHER.getDescricao(), BAD_REQUEST.value());
-            }
-            repository.save(INSTANCE.toVoucher(voucherCadastroRequest));
         }
+
+        if (voucher.isEmpty() || possoCadastrar) {
+            return INSTANCE.toVoucherCadastroResponse(repository.save(INSTANCE.toVoucher(voucherCadastroRequest)));
+        }
+        throw new ExcecaoCustomizada(NAO_FOI_POSSIVEL_CRIAR_VOUCHER.getDescricao(), BAD_REQUEST.value());
     }
 }

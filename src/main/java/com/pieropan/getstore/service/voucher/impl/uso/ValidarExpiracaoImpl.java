@@ -12,7 +12,7 @@ import java.util.Optional;
 import static com.pieropan.getstore.enums.ValidacaoEnum.VOUCHER_EXPIRADO;
 
 @Component
-public class ValidarUsoValidadeImpl implements ValidarUsoVoucher {
+public class ValidarExpiracaoImpl implements ValidarUsoVoucher {
 
     @Override
     public void validar(Optional<Voucher> voucher) {
